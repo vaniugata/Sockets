@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <string.h>
 #include <iostream>
+#include <string>
 
 
 
@@ -40,20 +41,30 @@ int main(int argc, char** args){
 		perror("Error establishing connection to server.\n");
 		exit(0);
 	}
-	printf("client:  ");
-	bzero( buffer, sizeof(buffer) );
-	fgets( buffer, sizeof(buffer)-1, stdin);
-	if( write( connection, buffer, strlen(buffer) ) < 0 ){
-		perror("Error writing to socket.\n");
-		exit(0);
+
+	while( true ){
+	/*	if( write( connection, buffer, strlen(buffer) ) < 0 ){
+			perror("Error writing to socket.\n");
+			exit(0);
+		}
+		if( read( connection, buffer, sizeof(buffer)-1 ) < 0 ){
+			perror("Error: unable to read from socket.\n");
+			exit(0);
+		}*/
+		/*(if( recv( connection, buffer, sizeof(buffer), 0 ) < 0 ){
+			std::cerr << "Error: Failed to recieve data.\n";
+		}
+		std::cout << buffer << std::endl;*/
+		std::cout << "client: ";
+		std::string data;
+		getline(std::cin, data );
+		memset( buffer, 0, sizeof(buffer) );
+		strcpy( buffer, data.c_str() );
+		data.clear();
+		if( send( connection, (char*)& buffer, strlen(buffer), 0 ) < 0 ){
+			std::cerr << "Error: Failed to send data.\n";
+		}
 	}
-	if( read( connection, buffer, sizeof(buffer)-1 ) < 0 ){
-		perror("Error: unable to read from socket.\n");
-		exit(0);
-	}
-	printf("server message: %s\n", buffer );
-	bzero( buffer, sizeof(buffer) );
-	
 	close( connection );
 	printf("Session closed.\n");
 	return 0;
